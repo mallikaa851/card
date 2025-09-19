@@ -1,0 +1,64 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Preview</title>
+  <style>
+    .wrap{display:flex;gap:30px;align-items:flex-start;justify-content:center;margin:30px;}
+    .actions{display:flex;gap:10px;justify-content:center;margin-top:10px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="cardCanvas">
+      <%- include(`cards/card${userData.card_type}`, { userData }) %>
+    </div>
+
+    <div>
+      <h3>Scan to Open</h3>
+      <img src="<%= userData.qrCodeDataURL %>" alt="QR" width="160">
+      <div class="actions">
+        <button onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional: PNG download via html2canvas -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+    async function downloadPNG(){
+      const node = document.getElementById('cardCanvas');
+      const canvas = await html2canvas(node);
+      const link = document.createElement('a');
+      link.download = 'business-card.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+  </script>
+</body>
+</html>
+
+/*<form action="/saveCard" method="POST">
+  <!-- hidden fields to send data -->
+  <input type="hidden" name="full_name" value="<%= userData.full_name %>">
+  <input type="hidden" name="job_title" value="<%= userData.job_title %>">
+  <input type="hidden" name="phone" value="<%= userData.phone %>">
+  <input type="hidden" name="email" value="<%= userData.email %>">
+  <input type="hidden" name="website" value="<%= userData.website %>">
+  <input type="hidden" name="license_no" value="<%= userData.license_no %>">
+  <input type="hidden" name="card_type" value="<%= userData.card_type %>">
+  <input type="hidden" name="font_family" value="<%= userData.font_family %>">
+  <input type="hidden" name="font_size" value="<%= userData.font_size %>">
+  <input type="hidden" name="color_primary" value="<%= userData.color_primary %>">
+  <input type="hidden" name="color_text" value="<%= userData.color_text %>">
+  <% if (userData.logo) { %>
+    <input type="hidden" name="logo" value="<%= userData.logo %>">
+  <% } %>
+
+  <button type="submit">💾 Save to My Cards</button>
+</form>*/
+

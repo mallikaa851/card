@@ -1,0 +1,92 @@
+/*<html>
+  <head>
+    <style>
+      body{
+        text-align: center;
+        box-shadow: 200px;
+        border-radius: 50px;
+        border-color: blueviolet;
+        border: 200px;
+        padding-left: 450;
+        padding-right: 150;
+        padding-bottom: 50;
+        padding-top: 50;
+      }
+      .submit{
+        background-color: blue;
+        color: white;
+      }
+      .target{
+        width: 450px;
+        height: auto;
+        background-color: white;
+        color: black;
+        border-radius: 20px;
+        box-shadow:0 8px 20px gray;
+        position:relative; 
+        padding:22px;
+        
+      }
+    </style>
+  </head>
+</html><body>
+  <h2 style="color: blue; font-size: 30; text-align: center; padding-right: 260;">Create Your Digital Business Card</h2>
+<form action="/preview" method="POST" enctype="multipart/form-data" class="target">
+  
+  Full Name: <input type="text" name="full_name" placeholder="Full Name" required><br><br>
+  Job Tilte: <input type="text" name="job_title" placeholder="Job Title" required><br><br>
+  Phone Number: <input type="text" name="phone" placeholder="Phone Number" required><br><br>
+  Email: <input type="email" name="email" placeholder="Email" required><br><br>
+  Website: <input type="text" name="website" placeholder="Website"><br><br>
+  
+
+  <label>Select Card Design (1 to 20):</label>
+  <select name="card_type" required>
+    <% for (let i = 1; i <= 20; i++) { %>
+      <option value="<%= i %>">Card <%= i %></option>
+    <% } %>
+  </select><br><br>
+  
+
+  <label>Background Color:</label>
+  <input type="color" name="color_primary" /><br><br>
+
+  <label>Text Color:</label>
+  <input type="color" name="color_text" /><br><br>
+
+  <label>Logo:</label><input type="file" name="logo"><br><br>
+  
+  <button type="submit">Generate Card</button>
+</form>
+</body>*/
+
+
+
+/*  <main>
+  <h2>My Cards</h2>
+  <div id="myCardsWrapper">
+    <% cards.forEach(card => { %>
+    <%- include(`templates/template${card.card_type}`, { card: card }) %>
+  <% }) %>
+    <% if (cards && cards.length > 0) { %>
+      <% cards.forEach(card => { %>
+        <div class="previewbox" 
+             style="background:<%= card.color_primary %>; color:<%= card.color_text %>; font-family:<%= card.font_family %>;">
+          <h3><%= card.full_name %></h3>
+          <p><%= card.job_title %></p>
+          <p><%= card.phone %></p>
+          <p><%= card.email %></p>
+          <p><%= card.website %></p>
+          <p><%= card.license_no %></p>
+          
+          <a href="/viewCard/<%= card.card_id %>">View</a> |
+          <a href="/editCard/<%= card.card_id %>">Edit</a> |
+          <a href="/deleteCard/<%= card.card_id %>">Delete</a>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p>No cards created yet.</p>
+    <% } %>
+  </div>
+</main> */
+

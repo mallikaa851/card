@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Business Card Creator</title>
+  <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <style>
+  /* Body & font */
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    color: #333;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-radius: 0 0 15px 15px;
+  }
+  .target textarea {
+  width: 100%;
+  min-height: 80px;   /* bigger height for address box */
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  resize: vertical;   /* user can resize height if needed */
+}
+.target input[type="url"] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+
+  .logo {
+    font-weight: 700;
+    font-size: 22px;
+    color: #007BFF;
+  }
+
+  .user-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 16px;
+  }
+
+  .logout-btn {
+    color: white;
+    background-color: #e74c3c;
+    padding: 8px 15px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+
+  .logout-btn:hover {
+    background-color: #c0392b;
+  }
+
+  .preview-box {
+  width: 250px;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin: 10px;
+}
+
+
+  /* Page title */
+  h2 {
+    text-align: center;
+    color: #007BFF;
+    font-size: 28px;
+    margin-top: 25px;
+  }
+
+  /* Dashboard wrapper */
+  #dashboardWrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 0px;
+  }
+
+  /* Form card */
+  .target {
+    width: 500px;
+    background-color: #fff;
+    padding: 30px 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transition: transform 0.3s;
+  }
+
+  .target:hover {
+    transform: translateY(-5px);
+  }
+
+  .target label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  .target input[type="text"],
+  .target input[type="email"],
+  .target input[type="password"],
+  .target input[type="file"],
+  .target select,
+  .target input[type="color"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+
+  .target input:focus,
+  .target select:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0,123,255,0.3);
+    outline: none;
+  }
+
+  .target button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(45deg, #007BFF, #00C6FF);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .target button:hover {
+    transform: scale(1.03);
+    background: linear-gradient(45deg, #00C6FF, #007BFF);
+  }
+
+  /* Preview box */
+  .preview-box {
+    width: 400px;
+    min-height: 350px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+    transition: background 0.3s, color 0.3s, font-size 0.3s;
+  }
+  #previewText {
+    text-align: center;
+    word-wrap: break-word;
+  }
+
+  /* Container box for image preview */
+
+
+  /* Preview img box */
+  #logoPreview {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 25px;
+}
+
+.switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 25px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; width: 20px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+#logoPreview {
+  background: transparent !important;   /* background color remove */
+  border: none !important;       /* outer border remove */
+}
+/* Cropper dark mask remove */
+.cropper-modal {
+  background: none !important;
+}
+
+/* Crop box overlay remove */
+.cropper-face {
+  background: none !important;
+}
+
+/* Outer container transparent */
+.cropper-container,
+.cropper-bg,
+.cropper-wrap {
+  background: none !important;
+}
+
+
+
+  /* Responsive */
+  @media (max-width: 1000px) {
+    #dashboardWrapper {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
+</style>
+
+
+</head>
+<body>
+
+<header>
+  <div class="logo">Digital Card App</div>
+  <div class="user-actions">
+    <span>Hi, <%= user.username %></span>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
+</header>
+
+  
+<h2>Create Your Digital Business Card</h2>
+
+<div id="dashboardWrapper">
+  <form  action="/tempCard" id="cardForm" method="POST" enctype="multipart/form-data" class="target" >
+    <label>Full Name:</label>
+    <input type="text" name="full_name" autocomplete="off"  required>
+
+    <label>Job Title:</label>
+    <input type="text" name="job_title" autocomplete="off" required>
+
+    <label>Phone Number:</label>
+    <input type="text" name="phone" autocomplete="off" required>
+
+    <label>Email:</label>
+    <input type="email" name="email" autocomplete="off" required>
+
+    <fieldset style="border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:20px;">
+  <legend><b>Address & Social Links</b></legend>
+
+  <label for="address">Address:</label>
+  <textarea id="address" name="address"></textarea>
+
+  <label for="social_linkedin">LinkedIn</label>
+  <input type="url" id="social_linkedin" name="social_linkedin" placeholder="Enter LinkedIn profile link">
+
+  <label for="social_facebook">Facebook</label>
+  <input type="url" id="social_facebook" name="social_facebook" placeholder="Enter Facebook profile link">
+
+  <label for="social_instagram">Instagram</label>
+  <input type="url" id="social_instagram" name="social_instagram" placeholder="Enter Instagram profile link">
+
+  <label for="social_youtube">YouTube</label>
+  <input type="url" id="social_youtube" name="social_youtube" placeholder="Enter YouTube channel link">
+
+  <label for="social_twitter">Twitter</label>
+  <input type="url" id="social_twitter" name="social_twitter" placeholder="Enter Twitter profile link">
+</fieldset>
+
+    <label>Website:</label>
+    <input type="text" name="website" autocomplete="off">
+
+    <label>Company License Number:</label>
+    <input type="text" name="license_no" autocomplete="off">
+
+    <label>Select Card Design (1-20):</label>
+    <select name="card_type" required>
+      <% for (let i = 1; i <= 20; i++) { %>
+        <option value="<%= i %>">Card <%= i %></option>
+      <% } %>
+    </select>
+
+    <label>Background Color</label>
+    <input type="color" id="bgColor" name="color_primary" id="colorprimary" onchange="updatePreview()">
+
+    <label>Secondary Color:</label>
+    <input type="color" name="color_secondary" id="secondaryColor" onchange="updatePreview()">
+
+    <label>Text Color</label>
+    <select id="textColor" name="color_text" onchange="updatePreview()"></select>
+
+
+    <label>Select Font Style:</label>
+    <select name="font_family" id="fontFamilySelect" onchange="updatePreview()">
+      <option value="Arial" style="font-family:Arial;">Arial</option>
+      <option value="Bookman" style="font-family:Bookman;">Bookman</option>
+      <option value="Brush Script MT" style="font-family:'Brush Script MT';">Brush Script</option>
+      <option value="Cambria" style="font-family:Cambria;">Cambria</option>
+      <option value="Candara" style="font-family:Candara;">Candara</option>
+      <option value="Century Gothic" style="font-family:'Century Gothic';">Century Gothic</option>
+      <option value="Comic Sans MS" style="font-family:'Comic Sans MS';">Comic Sans MS</option>
+      <option value="Consolas" style="font-family:Consolas;">Consolas</option>
+      <option value="Courier New" style="font-family:'Courier New';">Courier New</option>
+      <option value="Franklin Gothic Medium" style="font-family:'Franklin Gothic Medium';">Franklin Gothic</option>
+      <option value="Futura" style="font-family:Futura;">Futura</option>
+      <option value="Garamond" style="font-family:Garamond;">Garamond</option>
+      <option value="Georgia" style="font-family:Georgia;">Georgia</option>
+      <option value="Gill Sans" style="font-family:'Gill Sans';">Gill Sans</option>
+      <option value="Impact" style="font-family:Impact;">Impact</option>
+       <option value="Monaco" style="font-family:Monaco;">Monaco</option>
+      <option value="Lucida Console" style="font-family:'Lucida Console';">Lucida Console</option>
+      <option value="Optima" style="font-family:Optima;">Optima</option>
+      <option value="Rockwell" style="font-family:Rockwell;">Rockwell</option>
+      <option value="Palatino Linotype" style="font-family:'Palatino Linotype';">Palatino</option>
+      <option value="Segoe UI" style="font-family:'Segoe UI';">Segoe UI</option>
+      <option value="Tahoma" style="font-family:Tahoma;">Tahoma</option>
+      <option value="Times New Roman" style="font-family:'Times New Roman';">Times New Roman</option>
+      <option value="Trebuchet MS" style="font-family:'Trebuchet MS';">Trebuchet MS</option>
+      <option value="Verdana" style="font-family:Verdana;">Verdana</option>
+    </select>
+
+    <label>Select Font Size:</label>
+    <select name="font_size" id="fontSizeSelect" onchange="updatePreview()">
+      <option value="14px">14</option>
+      <option value="16px">16</option>
+      <option value="18px">18</option>
+      <option value="20px">20</option>
+      <option value="22px">22</option>
+      <option value="24px">24</option>
+    </select>
+
+    
+    <label>Upload Logo</label>
+    <input type="file" id="logoInput" accept="image/*">
+
+    <!-- Cropped Logo Preview -->
+    <img id="logoPreview" src="<%= userData?.logo || '/default-logo.png' %>" alt="Logo Preview">
+
+    <!-- Hidden input to save cropped logo path -->
+    <input type="hidden" name="logo" id="croppedLogoPath" value="<%= userData?.logo || '' %>">
+
+    <button type="button" id="cropBtn">Crop & Upload Logo</button>
+
+    <button type="submit">Generate Card</button>
+  </form>
+
+  <div class="preview-box" id="previewBox">
+    <p id="previewText">Your Text Preview Here</p>
+  </div>
+</div>
+
+
+
+
+<script>
+  function getBrightness(hexColor) {
+    hexColor = hexColor.replace('#', '');
+    let r = parseInt(hexColor.substr(0, 2), 16);
+    let g = parseInt(hexColor.substr(2, 2), 16);
+    let b = parseInt(hexColor.substr(4, 2), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000;
+  }
+
+  function updateTextColors(bgHex) {
+    const brightness = getBrightness(bgHex);
+    const textColorSelect = document.getElementById('textColor');
+    textColorSelect.innerHTML = "";
+
+    let lightColors = [
+  "#FFFFFF", // White
+  "#FFFACD", // LemonChiffon
+  "#FFF0F5", // LavenderBlush
+  "#FFEFD5", // PapayaWhip
+  "#FFE4E1", // MistyRose
+  "#FFF5EE", // SeaShell
+  "#FAFAD2", // LightGoldenRodYellow
+  "#F5F5F5", // WhiteSmoke
+  "#F5F5DC", // Beige
+  "#F5DEB3", // Wheat
+  "#FAF0E6", // Linen
+  "#F0FFF0", // HoneyDew
+  "#F0F8FF", // AliceBlue
+  "#E6E6FA", // Lavender
+  "#E0FFFF", // LightCyan
+  "#FFD700", // Gold
+  "#FFB6C1", // LightPink
+  "#F0E68C"  // Khaki
+];
+    let darkColors = [
+  "#000000","#111111","#191919","#2E2E2E","#333333","#3B3B3B","#34282C",
+  "#3C1414","#4B3621","#2F4F4F","#556B2F","#006400","#800000","#8B0000",
+  "#000080","#00008B","#483D8B","#4B0082","#191970","#0B3D91"
+];
+
+
+    let colorsToShow = brightness > 128 ? darkColors : lightColors;
+
+    colorsToShow.forEach(c => {
+      let opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      opt.style.backgroundColor = c;
+      textColorSelect.appendChild(opt);
+    });
+  }
+
+  document.getElementById('bgColor','secondaryColor').addEventListener('input', function () {
+    updateTextColors(this.value);
+    updatePreview();
+  });
+
+  updateTextColors("#FFFFFF");
+
+  function updatePreview() {
+    let box = document.getElementById("previewBox");
+    let text = document.getElementById("previewText");
+
+    box.style.backgroundColor = document.getElementById("bgColor").value;
+    box.style.backgroundColor = document.getElementById("secondaryColor").value;
+    text.style.color = document.getElementById("textColor").value;
+    text.style.fontFamily = document.getElementById("fontFamilySelect").value;
+    text.style.fontSize = document.getElementById("fontSizeSelect").value;
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+<script>
+let cropper;
+const logoInput = document.getElementById("logoInput");
+const logoPreview = document.getElementById("logoPreview");
+const croppedLogoPathInput = document.getElementById("croppedLogoPath");
+
+// When user selects file
+logoInput.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    logoPreview.src = e.target.result;
+
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(logoPreview, {
+      aspectRatio: 1,
+      viewMode: 1,
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+// Crop & Upload
+document.getElementById("cropBtn").addEventListener("click", () => {
+  if (!cropper) return alert("Please upload an image first!");
+
+  const canvas = cropper.getCroppedCanvas({ width: 300, height: 300, fillColor: ""});
+  const croppedDataURL = canvas.toDataURL("image/png");
+
+  fetch("/uploadCroppedLogo", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ croppedImage: croppedDataURL })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      // Update preview immediately
+      logoPreview.src = data.logoPath;
+      // Save to hidden input
+      croppedLogoPathInput.value = data.logoPath;
+      alert("Logo uploaded successfully!");
+    } else {
+      alert("Failed to upload cropped logo.");
+    }
+  })
+  .catch(err => console.error(err));
+});
+</script>
+<script>
+  
+
+  // Cropped image backend ku save pannum
+  function saveCroppedImage() {
+    if (!cropper) return alert("Please upload and crop an image first!");
+
+    const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+    const croppedImage = canvas.toDataURL("image/png");
+
+    fetch("/uploadCroppedLogo", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ croppedImage })
+})
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById("preview-logo").src = data.logoPath;  
+        document.querySelector('input[name="logo"]').value = data.logoPath;
+        alert("Logo uploaded successfully!");
+      } else {
+        alert("Failed to upload cropped logo");
+      }
+    })
+    .catch(err => console.error("Error uploading cropped logo:", err));
+  }
+</script>
+
+
+</body>
+</html>
