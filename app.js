@@ -304,7 +304,8 @@ app.post('/saveCardFromPreview', upload.single('logo'), async (req, res) => {
 
     // ✅ QR code generate pannunga
     if (includeQr) {
-      const base = `${req.protocol}://${req.get('host')}`;
+      // ✅ Public base URL use pannunga
+      const base = "https://mallikaa851.github.io/card";
       const cardUrl = `${base}/card/${cardId}`;
       const qrDataUrl = await QRCode.toDataURL(cardUrl);
       const base64Data = qrDataUrl.replace(/^data:image\/png;base64,/, "");
